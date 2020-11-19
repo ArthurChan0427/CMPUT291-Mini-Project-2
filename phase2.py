@@ -1,7 +1,6 @@
 from pymongo import MongoClient
 
 port = int(input('Please enter the port to connect to: '))
-
 client = MongoClient('localhost', port)
 db = client['291db']
 
@@ -17,7 +16,50 @@ def main():
 
 
 def displayUserReport(userID):
-    pass
+    print('\nLogging in as user ' + userID + '\n')
+    postsCollection = db['posts_collection']
+
+    questionCounts = postsCollection.count_documents(
+        {
+            '$and': [
+                {'OwnerUserId': userID},
+                {'PostTypeId': '1'}
+            ]
+        })
+    print('\nnumber of questions owned: ' + str(questionCounts) + '\n')
+    if questionCounts > 0:
+        averageQuestionScore = postsCollection.aggregate([
+            {'$match': {
+                '$and': [{'OwnerUserId': userID}, {'PostTypeId': '1'}]}},
+            {'$group': {'_id': None, 'score': {'$avg': '$Score'}}
+             }])
+        print('\naverage score of questions: ' +
+              str(round(list(averageQuestionScore)[0]['score'], 2)) + '\n')
+
+    answerCounts = postsCollection.count_documents(
+        {
+            '$and': [
+                {'OwnerUserId': userID},
+                {'PostTypeId': '2'}
+            ]
+        })
+    print('\nnumber of answers owned: ' + str(answerCounts) + '\n')
+    if answerCounts > 0:
+        averageAnswerScore = postsCollection.aggregate([
+            {'$match': {
+                '$and': [{'OwnerUserId': userID}, {'PostTypeId': '2'}]}},
+            {'$group': {'_id': None, 'score': {'$avg': '$Score'}}
+             }])
+        print('\naverage score of answers: ' +
+              str(round(list(averageAnswerScore)[0]['score'], 2)) + '\n')
+
+    if questionCounts > 0 or answerCounts > 0:
+        totalScore = postsCollection.aggregate([
+            {'$match': {'OwnerUserId': userID}},
+            {'$group': {'_id': None, 'score': {'$sum': '$Score'}}
+             }])
+        print('\ntotal votes received: ' +
+              str(list(totalScore)[0]['score']) + '\n')
 
 
 def displayMainMenu(userID):
@@ -40,7 +82,9 @@ def displayMainMenu(userID):
 
 
 def postQuestion(userID):
-    pass
+    title = input('Please Enter the title of the post:')
+    body = input('Please enter the body of the post')
+    tag = input('Please enter tags ')
 
 
 def searchQuestions(userID):
