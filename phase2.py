@@ -94,14 +94,13 @@ def displayMainMenu(userID):
 def postQuestion(userID):
     title = input('Please Enter the title of the question: ').strip()
     body = input('Please enter the body of the question: ').strip()
-    tags = input(
-        'Please enter tags sepearated by spaces (tag1 tag2 ...): ').strip()
-    id = generateUniqueID(1)
+    tags = set(input(
+        'Please enter tags sepearated by spaces (tag1 tag2 ...): ').strip().lower().split())
     document = {
-        'Id': id,
+        'Id': generateUniqueID(1),
         'Title': title,
         'Body': body,
-        'Tags': tags,
+        'Tags': ' '.join(tags),
         'CreationDate': str(datetime.now()),
         'PostTypeId': '1',
         'Score': '0',
@@ -114,6 +113,7 @@ def postQuestion(userID):
     if userID != '':
         document['OwnerUserId'] = userID
     db['posts_collection'].insert_one(document)
+    updateTagsCollection(tags)
 
 
 def searchQuestions():
@@ -172,6 +172,21 @@ def generateUniqueID(type):
             '$max': {'$convert': {'input': '$Id', 'to': 'double'}}}}}
     ])
     return str(int(list(maxID)[0]['maxId']) + 1)
+
+
+def updateTagsCollection(tags):
+    for tag in tags:
+        result = db['tags_collection'].count_documents({'TagName': tag})
+        if result > 0:
+            db['tags_collection'].update(
+                {'TagName': tag}, {'$inc': {'Count': 1}})
+        else:
+            document = {
+                'Id': generateUniqueID(2),
+                'TagName': tag,
+                'Count': 1,
+            }
+            db['tags_collection'].insert(document)
 
 
 main()
