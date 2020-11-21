@@ -84,6 +84,34 @@ def displayMainMenu(userID):
         else:
             print('Invalid command: ' + command + '\n')
 
+def postAnswer(userID,qID):
+    #control userID
+    
+    text = input('Please enter the body of the question: ').strip()
+    #id = generateUniquePostID()
+
+    db['posts_collection'].insert_one(
+        {
+            # 'Id': id,
+            'Body': text,
+            'OwnerUserId': userID,
+            'ParentID': qID, 
+            'CreationDate': str(datetime.now()),
+            'PostTypeId': '2',
+            'Score': '0',
+            'CommentCount': '0',
+            'ContentLicense': 'CC BY-SA 2.5',
+        }
+    )
+
+def listAnswers(postID):
+    db['posts_collection'].find({
+        
+    })
+
+def castVote(userID, postID):
+    pass
+
 
 def postQuestion(userID):
     if userID == '':
