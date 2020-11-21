@@ -86,7 +86,7 @@ def displayMainMenu(userID):
                     elif questionAction == 2:
                         pass  # listAnswer(selectedQuestion['Id'])
                     elif questionAction == 3:
-                        pass  # castVote(selectedQuestion['Id'])
+                        pass  # castVote(selectedQuestion)
             else:
                 print('No matching results...')
         elif command == 'x' or command == 'X':
