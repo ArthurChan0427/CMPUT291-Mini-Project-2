@@ -17,7 +17,7 @@ def main():
 
 
 def displayUserReport(userID):
-    print('\nLogging in as user ' + userID + '\n')
+    print('\nLogging in as user ' + userID)
     postsCollection = db['posts_collection']
 
     questionCounts = postsCollection.count_documents(
@@ -28,15 +28,15 @@ def displayUserReport(userID):
             ]
         }
     )
-    print('\nnumber of questions owned: ' + str(questionCounts) + '\n')
+    print('number of questions owned: ' + str(questionCounts))
     if questionCounts > 0:
         averageQuestionScore = postsCollection.aggregate([
             {'$match': {
                 '$and': [{'OwnerUserId': userID}, {'PostTypeId': '1'}]}},
             {'$group': {'_id': None, 'score': {'$avg': '$Score'}}}
         ])
-        print('\naverage score of questions: ' +
-              str(round(list(averageQuestionScore)[0]['score'], 2)) + '\n')
+        print('average score of questions: ' +
+              str(round(list(averageQuestionScore)[0]['score'], 2)))
 
     answerCounts = postsCollection.count_documents(
         {
@@ -46,15 +46,15 @@ def displayUserReport(userID):
             ]
         }
     )
-    print('\nnumber of answers owned: ' + str(answerCounts) + '\n')
+    print('number of answers owned: ' + str(answerCounts))
     if answerCounts > 0:
         averageAnswerScore = postsCollection.aggregate([
             {'$match': {
                 '$and': [{'OwnerUserId': userID}, {'PostTypeId': '2'}]}},
             {'$group': {'_id': None, 'score': {'$avg': '$Score'}}}
         ])
-        print('\naverage score of answers: ' +
-              str(round(list(averageAnswerScore)[0]['score'], 2)) + '\n')
+        print('average score of answers: ' +
+              str(round(list(averageAnswerScore)[0]['score'], 2)))
 
     if questionCounts > 0 or answerCounts > 0:
         totalScore = postsCollection.aggregate([
@@ -62,24 +62,31 @@ def displayUserReport(userID):
             {'$group': {'_id': None, 'score': {'$sum': '$Score'}}
              }
         ])
-        print('\ntotal votes received: ' +
-              str(list(totalScore)[0]['score']) + '\n')
+        print('total votes received: ' +
+              str(list(totalScore)[0]['score']))
 
 
 def displayMainMenu(userID):
     while True:
         print('\nEnter "x" to logout')
         print('Enter 1 to post a question')
-        print('Enter 2 to search for questions\n')
+        print('Enter 2 to search for questions')
         command = input()
         if command == '1':
             postQuestion(userID)
         elif command == '2':
-            results = searchQuestions()
-            if results.count(True) > 0:
-                selectedQuestion = displayResults(results)
+            results, resultsCount = searchQuestions()
+            if resultsCount > 0:
+                selectedQuestion = displayResults(results, resultsCount)
                 if selectedQuestion != None:
-                    displaySelectedQuestion(selectedQuestion)
+                    questionAction = displaySelectedQuestion(selectedQuestion)
+                    ##### call your function here ###############################################################
+                    if questionAction == 1:
+                        pass  # postAnswer(userID, selectedQuestion)
+                    elif questionAction == 2:
+                        pass  # listAnswer(selectedQuestion['Id'])
+                    elif questionAction == 3:
+                        pass  # castVote(selectedQuestion)
             else:
                 print('No matching results...')
         elif command == 'x' or command == 'X':
@@ -88,7 +95,7 @@ def displayMainMenu(userID):
                 return True
             return False
         else:
-            print('Invalid command: ' + command + '\n')
+            print('Invalid command: ' + command)
 
 def postAnswer(userID,qID):
     #control userID
@@ -130,11 +137,11 @@ def postQuestion(userID):
         'Body': body,
         'CreationDate': str(datetime.now()),
         'PostTypeId': '1',
-        'Score': '0',
-        'ViewCount': '0',
-        'AnswerCount': '0',
-        'CommentCount': '0',
-        'FavouriteCount': '0',
+        'Score': 0,
+        'ViewCount': 0,
+        'AnswerCount': 0,
+        'CommentCount': 0,
+        'FavouriteCount': 0,
         'ContentLicense': 'CC BY-SA 2.5',
     }
     if userID != '':
@@ -169,34 +176,45 @@ def searchQuestions():
             {'PostTypeId': '1'}
         ]}
     )
+    return (results, results.count(True))
 
-    return results
 
-
-def displayResults(results):
+def displayResults(results, resultsCount):
     displayCount = 3
     i = 0
     temp = [0] * displayCount
     while True:
         for j in range(displayCount):
-            if i == results.count(True):
+            if i == resultsCount:
                 i = 0
             temp[j] = i
-            print('-' * 50)
+            print('-' * 20 + ' ' + str(j + 1) + ' ' + '-' * 20)
             print('Title: ' + str(results[i]['Title']))
             print('CreationDate: ' + str(results[i]['CreationDate']))
             print('Score: ' + str(results[i]['Score']))
             print('AnswerCount: ' + str(results[i]['AnswerCount']))
             i = i + 1
-        choice = input('Enter 1 (top), 2, or 3 (bottom) to select the post currently displayed.\nEnter "x" to return to main menu\nEnter anything else to see more results').strip().lower()
+        print('\nEnter 1 (top), 2, or 3 (bottom) to select the post currently displayed.')
+        print('Enter "x" to return to main menu.')
+        print('Enter anything else to see more results.')
+        choice = input().strip().lower()
         if choice in ['1', '2', '3']:
-            return results[temp[int(choice)]]
+            return results[temp[int(choice) - 1]]
         elif choice == 'x':
             return None
 
 
 def displaySelectedQuestion(selectedQuestion):
-    pass
+    db['posts_collection'].update(
+        {'Id': selectedQuestion['Id']}, {'$inc': {'ViewCount': 1}})
+    print('\n' + '-' * 20 + ' Your selection ' + '-' * 20)
+    for field in selectedQuestion.keys():
+        print(field + ": " + str(selectedQuestion[field]))
+    print('\nEnter 1 to post an answer to this question.')
+    print('Enter 2 to list all existing answers to this question.')
+    print('Enter 3 to vote for this question.')
+    print('Enter anything else to return to main menu.')
+    return input()
 
 
 def generateUniqueID(type):
