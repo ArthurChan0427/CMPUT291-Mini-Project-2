@@ -109,11 +109,11 @@ def postQuestion(userID):
         'Body': body,
         'CreationDate': str(datetime.now()),
         'PostTypeId': '1',
-        'Score': '0',
-        'ViewCount': '0',
-        'AnswerCount': '0',
-        'CommentCount': '0',
-        'FavouriteCount': '0',
+        'Score': 0,
+        'ViewCount': 0,
+        'AnswerCount': 0,
+        'CommentCount': 0,
+        'FavouriteCount': 0,
         'ContentLicense': 'CC BY-SA 2.5',
     }
     if userID != '':
