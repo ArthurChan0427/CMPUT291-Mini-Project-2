@@ -1,3 +1,5 @@
+# Need to check what to do with comments
+
 from pymongo import MongoClient
 from datetime import datetime
 
@@ -77,16 +79,27 @@ def displayMainMenu(userID):
         elif command == '2':
             results, resultsCount = searchQuestions()
             if resultsCount > 0:
-                selectedQuestion = displayResults(results, resultsCount)
+                selectedQuestion = displayQuestions(results, resultsCount)
                 if selectedQuestion != None:
                     questionAction = displaySelectedQuestion(selectedQuestion)
                     ##### call your function here ###############################################################
                     if questionAction == 1:
-                        pass  # postAnswer(userID, selectedQuestion)
+                        postAnswer(userID, selectedQuestion)
                     elif questionAction == 2:
-                        pass  # listAnswer(selectedQuestion['Id'])
+                        resultsA, resultsCountA = listAnswers(selectedQuestion['Id'])
+                        if resultsCountA > 0:
+                            selectedAnswer = displayAnswer(resultsA, resultsCountA)
+                            #print("i am here and selected an answer" )
+                            if selectedAnswer != None:
+                                 AnswerAction = displaySelectedAnswer(selectedAnswer)
+                                 #print(AnswerAction)
+                                 if AnswerAction == 1:
+                                     #print("I am here" + "#" *20 )
+                                     castVote(userID, selectedAnswer['Id'])
+                        else:
+                            print('No matching results...')
                     elif questionAction == 3:
-                        pass  # castVote(selectedQuestion)
+                        castVote(userID, selectedQuestion['Id'])
             else:
                 print('No matching results...')
         elif command == 'x' or command == 'X':
@@ -97,33 +110,51 @@ def displayMainMenu(userID):
         else:
             print('Invalid command: ' + command)
 
-def postAnswer(userID,qID):
-    #control userID
-    
+def postAnswer(userID,selectedQuestion):
     text = input('Please enter the body of the question: ').strip()
-    #id = generateUniquePostID()
 
-    db['posts_collection'].insert_one(
-        {
-            # 'Id': id,
+    document = {
+            'Id': generateUniqueID(1),
             'Body': text,
-            'OwnerUserId': userID,
-            'ParentID': qID, 
+            'ParentID': selectedQuestion['Id'], 
             'CreationDate': str(datetime.now()),
             'PostTypeId': '2',
-            'Score': '0',
-            'CommentCount': '0',
+            'Score': 0,
+            'CommentCount': 0,
             'ContentLicense': 'CC BY-SA 2.5',
-        }
-    )
+    }
+    if userID != '':
+        document['OwnerUserId'] = userID
+    db['posts_collection'].insert_one(document)
+    db['posts_collection'].update_one(
+                {'Id': selectedQuestion['Id']}, {'$inc': {'AnswerCount': 1}})
 
-def listAnswers(postID):
-    db['posts_collection'].find({
-        
-    })
 
 def castVote(userID, postID):
-    pass
+    if userID != '':
+        if db['votes_collection'].find({'$and':[ {'UserId': userID}, {'PostID': postID} ]}).limit(1).count() > 0:
+                print("You have already voted on this post!")
+        else:
+                db['posts_collection'].update_one({'Id': postID}, {'$inc': {'Score': 1}})
+                document = {
+                    'Id': generateUniqueID(1),
+                    'CreationDate': str(datetime.now()),
+                    'VoteTypeId': '2',
+                    'UserId': userID,
+                    'PostID': postID,
+                    }
+                db['votes_collection'].insert_one(document)
+                print("Your vote has been casted")
+    else:
+        db['posts_collection'].update_one({'Id': postID}, {'$inc': {'Score': 1}})
+        document = {
+                    'Id': generateUniqueID(3),
+                    'CreationDate': str(datetime.now()),
+                    'VoteTypeId': '2',
+                    'PostID': postID,
+                    }
+        db['votes_collection'].insert_one(document)
+        print("Your vote has been casted")
 
 
 def postQuestion(userID):
@@ -152,7 +183,7 @@ def postQuestion(userID):
     for tag in tags:
         result = db['tags_collection'].count_documents({'TagName': tag})
         if result > 0:
-            db['tags_collection'].update(
+            db['tags_collection'].update_one(
                 {'TagName': tag}, {'$inc': {'Count': 1}})
         else:
             document = {
@@ -160,7 +191,7 @@ def postQuestion(userID):
                 'TagName': tag,
                 'Count': 1,
             }
-            db['tags_collection'].insert(document)
+            db['tags_collection'].insert_one(document)
 
 
 def searchQuestions():
@@ -178,8 +209,41 @@ def searchQuestions():
     )
     return (results, results.count(True))
 
+def listAnswers(postID):
+    resultsA = db['posts_collection'].find(
+        {'$and': [
+            {'$or': [
+                {'ParentID': postID}]},
+                
+            {'PostTypeId': '2'}
+        ]}
+    )
+    return (resultsA, resultsA.count(True))
 
-def displayResults(results, resultsCount):
+def displayAnswer(results, resultsCount):
+    displayCount = 3
+    i = 0
+    temp = [0] * displayCount
+    while True:
+        for j in range(displayCount):
+            if i == resultsCount:
+                i = 0
+            temp[j] = i
+            print('-' * 20 + ' ' + str(j + 1) + ' ' + '-' * 20)
+            print('Answer: ' + str(results[i]['Body']))
+            print('CreationDate: ' + str(results[i]['CreationDate']))
+            print('Score: ' + str(results[i]['Score']))
+            i = i + 1
+        print('\nEnter 1 (top), 2, or 3 (bottom) to select the post currently displayed.')
+        print('Enter "x" to return to main menu.')
+        print('Enter anything else to see more results.')
+        choice = input().strip().lower()
+        if choice in ['1', '2', '3']:
+            return results[temp[int(choice) - 1]]
+        elif choice == 'x':
+            return None
+
+def displayQuestions(results, resultsCount):
     displayCount = 3
     i = 0
     temp = [0] * displayCount
@@ -205,7 +269,7 @@ def displayResults(results, resultsCount):
 
 
 def displaySelectedQuestion(selectedQuestion):
-    db['posts_collection'].update(
+    db['posts_collection'].update_one(
         {'Id': selectedQuestion['Id']}, {'$inc': {'ViewCount': 1}})
     print('\n' + '-' * 20 + ' Your selection ' + '-' * 20)
     for field in selectedQuestion.keys():
@@ -214,8 +278,23 @@ def displaySelectedQuestion(selectedQuestion):
     print('Enter 2 to list all existing answers to this question.')
     print('Enter 3 to vote for this question.')
     print('Enter anything else to return to main menu.')
-    return input()
+    optionEntered = input()
+    if optionEntered.isdigit():
+        return int(optionEntered)
+    return optionEntered
 
+def displaySelectedAnswer(selectedAnswer):
+    db['posts_collection'].update_one(
+        {'Id': selectedAnswer['Id']}, {'$inc': {'ViewCount': 1}})
+    print('\n' + '-' * 20 + ' Your selection ' + '-' * 20)
+    for field in selectedAnswer.keys():
+        print(field + ": " + str(selectedAnswer[field]))
+    print('Enter 1 to vote for this question.')
+    print('Enter anything else to return to main menu.')
+    optionEntered = input()
+    if optionEntered.isdigit():
+        return int(optionEntered)
+    return optionEntered
 
 def generateUniqueID(type):
     collection = ''
