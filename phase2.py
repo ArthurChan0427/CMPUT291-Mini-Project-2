@@ -160,11 +160,12 @@ def displayResults(results, resultsCount):
             if i == resultsCount:
                 i = 0
             temp[j] = i
+            result = results[i]
             print('-' * 20 + ' ' + str(j + 1) + ' ' + '-' * 20)
-            print('Title: ' + str(results[i]['Title']))
-            print('CreationDate: ' + str(results[i]['CreationDate']))
-            print('Score: ' + str(results[i]['Score']))
-            print('AnswerCount: ' + str(results[i]['AnswerCount']))
+            print('Title: ' + str(result['Title']))
+            print('CreationDate: ' + str(result['CreationDate']))
+            print('Score: ' + str(result['Score']))
+            print('AnswerCount: ' + str(result['AnswerCount']))
             i = i + 1
         print('\nEnter 1 (top), 2, or 3 (bottom) to select the post currently displayed.')
         print('Enter "x" to return to main menu.')
