@@ -78,6 +78,7 @@ def displayMainMenu(userID):
             postQuestion(userID)
         elif command == '2':
             results, resultsCount = searchQuestions()
+            print("returned from search")
             if resultsCount > 0:
                 selectedQuestion = displayQuestions(results, resultsCount)
                 if selectedQuestion != None:
@@ -198,16 +199,21 @@ def searchQuestions():
     reg = '|'.join(input(
         'Please enter keywords separated by spaces (word1 word2 ...): ').strip().split())
 
-    results = db['posts_collection'].find(
-        {'$and': [
+    searchCondition = {
+        '$and': [
             {'$or': [
                 {'Title': {'$regex': reg, '$options': 'i'}},
                 {'Body': {'$regex': reg, '$options': 'i'}},
                 {'Tags': {'$regex': reg, '$options': 'i'}}]},
             {'PostTypeId': '1'}
-        ]}
-    )
-    return (results, results.count(True))
+        ]
+    }
+    results = db['posts_collection'].find(searchCondition)
+    print("done searching")
+    results = list(db['posts_collection'].find(searchCondition))
+    print("done searching")
+    # resultsCount = db['posts_collection'].count_documents(searchCondition)
+    return (results, len(results))
 
 def listAnswers(postID):
     resultsA = db['posts_collection'].find(
@@ -233,7 +239,7 @@ def displayAnswer(results, resultsCount):
             print('Answer: ' + str(results[i]['Body']))
             print('CreationDate: ' + str(results[i]['CreationDate']))
             print('Score: ' + str(results[i]['Score']))
-            i = i + 1
+            # i = i + 1
         print('\nEnter 1 (top), 2, or 3 (bottom) to select the post currently displayed.')
         print('Enter "x" to return to main menu.')
         print('Enter anything else to see more results.')
