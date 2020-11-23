@@ -89,12 +89,12 @@ def displayMainMenu(userID):
                         resultsA, resultsCountA = listAnswers(selectedQuestion['Id'])
                         if resultsCountA > 0:
                             selectedAnswer = displayAnswer(resultsA, resultsCountA)
-                            print("i am here and selected an answer" )
+                            #print("i am here and selected an answer" )
                             if selectedAnswer != None:
                                  AnswerAction = displaySelectedAnswer(selectedAnswer)
-                                 print(AnswerAction)
+                                 #print(AnswerAction)
                                  if AnswerAction == 1:
-                                     print("I am here" + "#" *20 )
+                                     #print("I am here" + "#" *20 )
                                      castVote(userID, selectedAnswer['Id'])
                         else:
                             print('No matching results...')
