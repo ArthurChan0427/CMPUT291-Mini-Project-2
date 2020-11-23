@@ -78,7 +78,6 @@ def displayMainMenu(userID):
             postQuestion(userID)
         elif command == '2':
             results, resultsCount = searchQuestions()
-            print("returned from search")
             if resultsCount > 0:
                 selectedQuestion = displayQuestions(results, resultsCount)
                 if selectedQuestion != None:
@@ -208,23 +207,19 @@ def searchQuestions():
             {'PostTypeId': '1'}
         ]
     }
-    results = db['posts_collection'].find(searchCondition)
-    print("done searching")
     results = list(db['posts_collection'].find(searchCondition))
-    print("done searching")
-    # resultsCount = db['posts_collection'].count_documents(searchCondition)
     return (results, len(results))
 
 def listAnswers(postID):
-    resultsA = db['posts_collection'].find(
+    resultsA = list(db['posts_collection'].find(
         {'$and': [
             {'$or': [
                 {'ParentID': postID}]},
                 
             {'PostTypeId': '2'}
         ]}
-    )
-    return (resultsA, resultsA.count(True))
+    ))
+    return (resultsA, len(resultsA))
 
 def displayAnswer(results, resultsCount):
     displayCount = 3
@@ -235,11 +230,12 @@ def displayAnswer(results, resultsCount):
             if i == resultsCount:
                 i = 0
             temp[j] = i
+            result = results[i]
             print('-' * 20 + ' ' + str(j + 1) + ' ' + '-' * 20)
-            print('Answer: ' + str(results[i]['Body']))
-            print('CreationDate: ' + str(results[i]['CreationDate']))
-            print('Score: ' + str(results[i]['Score']))
-            # i = i + 1
+            print('Answer: ' + str(result['Body']))
+            print('CreationDate: ' + str(result['CreationDate']))
+            print('Score: ' + str(results['Score']))
+            i = i + 1
         print('\nEnter 1 (top), 2, or 3 (bottom) to select the post currently displayed.')
         print('Enter "x" to return to main menu.')
         print('Enter anything else to see more results.')
