@@ -135,7 +135,7 @@ def postAnswer(userID, selectedQuestion):
     document = {
         'Id': generateUniqueID(1),
         'Body': text,
-        'ParentID': selectedQuestion['Id'],
+        'ParentId': selectedQuestion['Id'],
         'CreationDate': str(datetime.now()),
         'PostTypeId': '2',
         'Score': 0,
@@ -260,7 +260,7 @@ def listAnswers(postID):
     resultsA = list(db['posts_collection'].find(
         {'$and': [
             {'$or': [
-                {'ParentID': postID}]},
+                {'ParentId': postID}]},
 
             {'PostTypeId': '2'}
         ]}
@@ -339,7 +339,8 @@ def displaySelectedQuestion(selectedQuestion):
     """
     db['posts_collection'].update_one(
         {'Id': selectedQuestion['Id']}, {'$inc': {'ViewCount': 1}})
-    selectedQuestion['ViewCount'] += 1
+    if 'ViewCount' in selectedQuestion:
+        selectedQuestion['ViewCount'] += 1
     print('\n' + '-' * 20 + ' Your selection ' + '-' * 20)
     for field in selectedQuestion.keys():
         print(field + ": " + str(selectedQuestion[field]))
@@ -361,7 +362,8 @@ def displaySelectedAnswer(selectedAnswer):
     """
     db['posts_collection'].update_one(
         {'Id': selectedAnswer['Id']}, {'$inc': {'ViewCount': 1}})
-    selectedAnswer['ViewCount'] += 1
+    if 'ViewCount' in selectedAnswer:
+        selectedAnswer['ViewCount'] += 1
     print('\n' + '-' * 20 + ' Your selection ' + '-' * 20)
     for field in selectedAnswer.keys():
         print(field + ": " + str(selectedAnswer[field]))
