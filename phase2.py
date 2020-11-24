@@ -182,7 +182,7 @@ def castVote(userID, postID):
             'PostID': postID,
         }
         db['votes_collection'].insert_one(document)
-        print("Your vote has been casted")
+        print("Your vote has been casted.")
 
 
 def postQuestion(userID):
