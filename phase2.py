@@ -9,6 +9,11 @@ db = client['291db']
 
 
 def main():
+    """
+        The program entry point which implements a simple loop prompts for a userID, display the corresponding user report, then display the main menu
+        Input: None
+        Output: None
+    """
     exit = False
     while not exit:
         userID = input("\nEnter your user ID: ").strip()
@@ -19,6 +24,11 @@ def main():
 
 
 def displayUserReport(userID):
+    """
+        Display the user report as per project specification.
+        Input: userID - an unique Id representing the user
+        Output: None
+    """
     print('\nLogging in as user ' + userID)
     postsCollection = db['posts_collection']
 
@@ -69,6 +79,11 @@ def displayUserReport(userID):
 
 
 def displayMainMenu(userID):
+    """
+        The main menu and the main driver which calls other functions.
+        Input: userID - an unique Id representing the user
+        Output: None
+    """
     while True:
         print('\nEnter "x" to logout')
         print('Enter 1 to post a question')
@@ -82,20 +97,19 @@ def displayMainMenu(userID):
                 selectedQuestion = displayQuestions(results, resultsCount)
                 if selectedQuestion != None:
                     questionAction = displaySelectedQuestion(selectedQuestion)
-                    ##### call your function here ###############################################################
                     if questionAction == 1:
                         postAnswer(userID, selectedQuestion)
                     elif questionAction == 2:
-                        resultsA, resultsCountA = listAnswers(selectedQuestion['Id'])
+                        resultsA, resultsCountA = listAnswers(
+                            selectedQuestion['Id'])
                         if resultsCountA > 0:
-                            selectedAnswer = displayAnswer(resultsA, resultsCountA)
-                            #print("i am here and selected an answer" )
+                            selectedAnswer = displayAnswer(
+                                resultsA, resultsCountA)
                             if selectedAnswer != None:
-                                 AnswerAction = displaySelectedAnswer(selectedAnswer)
-                                 #print(AnswerAction)
-                                 if AnswerAction == 1:
-                                     #print("I am here" + "#" *20 )
-                                     castVote(userID, selectedAnswer['Id'])
+                                AnswerAction = displaySelectedAnswer(
+                                    selectedAnswer)
+                                if AnswerAction == 1:
+                                    castVote(userID, selectedAnswer['Id'])
                         else:
                             print('No matching results...')
                     elif questionAction == 3:
@@ -110,54 +124,74 @@ def displayMainMenu(userID):
         else:
             print('Invalid command: ' + command)
 
-def postAnswer(userID,selectedQuestion):
+
+def postAnswer(userID, selectedQuestion):
+    """
+        Inserts an answer to the selected question.
+        Input: userID - an unique Id representing the user
+               selectedQuestion - a dictionary representing the selected question
+        Output: None
+    """
     text = input('Please enter the body of the question: ').strip()
 
     document = {
-            'Id': generateUniqueID(1),
-            'Body': text,
-            'ParentID': selectedQuestion['Id'], 
-            'CreationDate': str(datetime.now()),
-            'PostTypeId': '2',
-            'Score': 0,
-            'CommentCount': 0,
-            'ContentLicense': 'CC BY-SA 2.5',
+        'Id': generateUniqueID(1),
+        'Body': text,
+        'ParentID': selectedQuestion['Id'],
+        'CreationDate': str(datetime.now()),
+        'PostTypeId': '2',
+        'Score': 0,
+        'CommentCount': 0,
+        'ContentLicense': 'CC BY-SA 2.5',
     }
     if userID != '':
         document['OwnerUserId'] = userID
     db['posts_collection'].insert_one(document)
     db['posts_collection'].update_one(
-                {'Id': selectedQuestion['Id']}, {'$inc': {'AnswerCount': 1}})
+        {'Id': selectedQuestion['Id']}, {'$inc': {'AnswerCount': 1}})
 
 
 def castVote(userID, postID):
+    """
+        Inserts a vote to the selected post
+        Input: userID - an unique Id representing the user
+               postID - an unique Id representing the selected post
+        Output: None
+    """
     if userID != '':
-        if db['votes_collection'].find({'$and':[ {'UserId': userID}, {'PostID': postID} ]}).limit(1).count() > 0:
-                print("You have already voted on this post!")
+        if db['votes_collection'].find({'$and': [{'UserId': userID}, {'PostID': postID}]}).limit(1).count() > 0:
+            print("You have already voted on this post!")
         else:
-                db['posts_collection'].update_one({'Id': postID}, {'$inc': {'Score': 1}})
-                document = {
-                    'Id': generateUniqueID(1),
-                    'CreationDate': str(datetime.now()),
-                    'VoteTypeId': '2',
-                    'UserId': userID,
-                    'PostID': postID,
-                    }
-                db['votes_collection'].insert_one(document)
-                print("Your vote has been casted")
+            db['posts_collection'].update_one(
+                {'Id': postID}, {'$inc': {'Score': 1}})
+            document = {
+                'Id': generateUniqueID(1),
+                'CreationDate': str(datetime.now()),
+                'VoteTypeId': '2',
+                'UserId': userID,
+                'PostID': postID,
+            }
+            db['votes_collection'].insert_one(document)
+            print("Your vote has been casted")
     else:
-        db['posts_collection'].update_one({'Id': postID}, {'$inc': {'Score': 1}})
+        db['posts_collection'].update_one(
+            {'Id': postID}, {'$inc': {'Score': 1}})
         document = {
-                    'Id': generateUniqueID(3),
-                    'CreationDate': str(datetime.now()),
-                    'VoteTypeId': '2',
-                    'PostID': postID,
-                    }
+            'Id': generateUniqueID(3),
+            'CreationDate': str(datetime.now()),
+            'VoteTypeId': '2',
+            'PostID': postID,
+        }
         db['votes_collection'].insert_one(document)
         print("Your vote has been casted")
 
 
 def postQuestion(userID):
+    """
+        Inserts a question.
+        Input: userID - an unique Id representing the user
+        Output: None
+    """
     title = input('Please Enter the title of the question: ').strip()
     body = input('Please enter the body of the question: ').strip()
     tags = set(input(
@@ -195,6 +229,12 @@ def postQuestion(userID):
 
 
 def searchQuestions():
+    """
+        Prompts for keywords and query posts_collection for results with at least one matching keyword.
+        Input: None
+        Output: results - a list of dictionaries representing the retrieved questions
+                len(results) - number of questions retrieved
+    """
     reg = '|'.join(input(
         'Please enter keywords separated by spaces (word1 word2 ...): ').strip().split())
 
@@ -210,18 +250,32 @@ def searchQuestions():
     results = list(db['posts_collection'].find(searchCondition))
     return (results, len(results))
 
+
 def listAnswers(postID):
+    """
+        Returns all existing answers to a selected question.
+        Input: postID - an unique Id representing the selected post
+        Output: resultsA - a list of dictionaries representing the retrieved answers
+                len(resultsA) - number of answers retrieved
+    """
     resultsA = list(db['posts_collection'].find(
         {'$and': [
             {'$or': [
                 {'ParentID': postID}]},
-                
+
             {'PostTypeId': '2'}
         ]}
     ))
     return (resultsA, len(resultsA))
 
+
 def displayAnswer(results, resultsCount):
+    """
+        Display a list of answers and prompts the user to select an answer
+        Input: results - a list of dictionaries representing the answers
+               resultsCount - number of answers in the list
+        Output: the selected answer, or None
+    """
     displayCount = 3
     i = 0
     temp = [0] * displayCount
@@ -245,7 +299,14 @@ def displayAnswer(results, resultsCount):
         elif choice == 'x':
             return None
 
+
 def displayQuestions(results, resultsCount):
+    """
+        Displays a list of questions and prompts the user to select a question
+        Input: results - a list of dictionaries representing the questions
+               resultsCount - number of questions in the list
+        Output: the selected question, or None
+    """
     displayCount = 3
     i = 0
     temp = [0] * displayCount
@@ -272,6 +333,11 @@ def displayQuestions(results, resultsCount):
 
 
 def displaySelectedQuestion(selectedQuestion):
+    """
+        Display all fields of a selected question and prompt for an action from the user.
+        Input: selectedQuestion - a dictionary representing the selected question
+        Output: optionEntered - action selected by the user
+    """
     db['posts_collection'].update_one(
         {'Id': selectedQuestion['Id']}, {'$inc': {'ViewCount': 1}})
     print('\n' + '-' * 20 + ' Your selection ' + '-' * 20)
@@ -286,7 +352,13 @@ def displaySelectedQuestion(selectedQuestion):
         return int(optionEntered)
     return optionEntered
 
+
 def displaySelectedAnswer(selectedAnswer):
+    """
+        Display all fields of a selected answer and prompt for an action from the user.
+        Input: selectedAnswer - a dictionary representing the selected answer
+        Output: optionEntered - action selected by the user
+    """
     db['posts_collection'].update_one(
         {'Id': selectedAnswer['Id']}, {'$inc': {'ViewCount': 1}})
     print('\n' + '-' * 20 + ' Your selection ' + '-' * 20)
@@ -299,7 +371,13 @@ def displaySelectedAnswer(selectedAnswer):
         return int(optionEntered)
     return optionEntered
 
+
 def generateUniqueID(type):
+    """
+        Return an Id that is unique with respect to the selected collection
+        Input: type - 1 = posts_collection, 2 = tags_collection, 3 = votes_collection
+        Output: generated Id
+    """
     collection = ''
     if type == 1:
         collection = 'posts_collection'
