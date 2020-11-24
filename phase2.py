@@ -144,7 +144,7 @@ def castVote(userID, postID):
                     'PostID': postID,
                     }
                 db['votes_collection'].insert_one(document)
-                print("Your vote has been casted")
+                print("Your vote has been casted.")
     else:
         db['posts_collection'].update_one({'Id': postID}, {'$inc': {'Score': 1}})
         document = {
@@ -154,7 +154,7 @@ def castVote(userID, postID):
                     'PostID': postID,
                     }
         db['votes_collection'].insert_one(document)
-        print("Your vote has been casted")
+        print("Your vote has been casted.")
 
 
 def postQuestion(userID):
@@ -230,7 +230,8 @@ def displayAnswer(results, resultsCount):
                 i = 0
             temp[j] = i
             print('-' * 20 + ' ' + str(j + 1) + ' ' + '-' * 20)
-            print('Answer: ' + str(results[i]['Body']))
+            #a = str(results[i]['Body']
+            print('Answer: ' + str(results[i]['Body'])[0:80])
             print('CreationDate: ' + str(results[i]['CreationDate']))
             print('Score: ' + str(results[i]['Score']))
             i = i + 1
