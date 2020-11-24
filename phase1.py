@@ -6,7 +6,7 @@ port = int(input("Please enter the port to connect to: "))
 
 print("Start.")
 client = MongoClient('localhost', port)
-db = client['db']
+db = client['291db']
 
 posts_collection = db['posts_collection']
 posts_collection.delete_many({})
