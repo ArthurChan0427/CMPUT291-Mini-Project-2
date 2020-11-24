@@ -1,5 +1,3 @@
-# Need to check what to do with comments
-
 from pymongo import MongoClient
 from datetime import datetime
 
@@ -68,14 +66,14 @@ def displayUserReport(userID):
         print('average score of answers: ' +
               str(round(list(averageAnswerScore)[0]['score'], 2)))
 
-    if questionCounts > 0 or answerCounts > 0:
-        totalScore = postsCollection.aggregate([
-            {'$match': {'OwnerUserId': userID}},
-            {'$group': {'_id': None, 'score': {'$sum': '$Score'}}
-             }
-        ])
-        print('total votes received: ' +
-              str(list(totalScore)[0]['score']))
+    
+    voteCount = db['votes_collection'].aggregate([
+        {'$match': {'UserId': userID}},
+        {'$group': {'_id': None, 'count': {'$sum': 1}}
+            }
+    ])
+    print('total votes casted: ' +
+            str(list(voteCount)[0]['count']))
 
 
 def displayMainMenu(userID):
@@ -132,7 +130,7 @@ def postAnswer(userID, selectedQuestion):
                selectedQuestion - a dictionary representing the selected question
         Output: None
     """
-    text = input('Please enter the body of the question: ').strip()
+    text = input('Please enter the body of the answer: ').strip()
 
     document = {
         'Id': generateUniqueID(1),
@@ -142,6 +140,7 @@ def postAnswer(userID, selectedQuestion):
         'PostTypeId': '2',
         'Score': 0,
         'CommentCount': 0,
+        'ViewCount': 0,
         'ContentLicense': 'CC BY-SA 2.5',
     }
     if userID != '':
@@ -165,7 +164,7 @@ def castVote(userID, postID):
             db['posts_collection'].update_one(
                 {'Id': postID}, {'$inc': {'Score': 1}})
             document = {
-                'Id': generateUniqueID(1),
+                'Id': generateUniqueID(3),
                 'CreationDate': str(datetime.now()),
                 'VoteTypeId': '2',
                 'UserId': userID,
@@ -288,7 +287,7 @@ def displayAnswer(results, resultsCount):
             print('-' * 20 + ' ' + str(j + 1) + ' ' + '-' * 20)
             print('Answer: ' + str(result['Body']))
             print('CreationDate: ' + str(result['CreationDate']))
-            print('Score: ' + str(results['Score']))
+            print('Score: ' + str(result['Score']))
             i = i + 1
         print('\nEnter 1 (top), 2, or 3 (bottom) to select the post currently displayed.')
         print('Enter "x" to return to main menu.')
@@ -340,6 +339,7 @@ def displaySelectedQuestion(selectedQuestion):
     """
     db['posts_collection'].update_one(
         {'Id': selectedQuestion['Id']}, {'$inc': {'ViewCount': 1}})
+    selectedQuestion['ViewCount'] += 1
     print('\n' + '-' * 20 + ' Your selection ' + '-' * 20)
     for field in selectedQuestion.keys():
         print(field + ": " + str(selectedQuestion[field]))
@@ -361,10 +361,11 @@ def displaySelectedAnswer(selectedAnswer):
     """
     db['posts_collection'].update_one(
         {'Id': selectedAnswer['Id']}, {'$inc': {'ViewCount': 1}})
+    selectedAnswer['ViewCount'] += 1
     print('\n' + '-' * 20 + ' Your selection ' + '-' * 20)
     for field in selectedAnswer.keys():
         print(field + ": " + str(selectedAnswer[field]))
-    print('Enter 1 to vote for this question.')
+    print('Enter 1 to vote for this answer.')
     print('Enter anything else to return to main menu.')
     optionEntered = input()
     if optionEntered.isdigit():
