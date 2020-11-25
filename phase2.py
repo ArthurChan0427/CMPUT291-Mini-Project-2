@@ -14,8 +14,7 @@ def main():
     """
     exit = False
     while not exit:
-        userID = input(
-            "\nEnter your user ID (Enter a blank field to operate anonymously): ").strip()
+        userID = input("\nEnter your user ID (Enter a blank field to operate anonymously): ").strip()
         if userID != '' and userID.isnumeric():
             displayUserReport(userID)
             exit = displayMainMenu(userID)
@@ -316,7 +315,7 @@ def displayAnswer(results, resultsCount, selectedQuestion):
                     print('Score: ' + str(result['Score']))
                     i = i + 1
             displayOptions(True)
-            choice = input().strip().lower()
+            choice = input("Enter Your choice here: ").strip().lower()
             if resultsCount > 0 and choice in ['1', '2', '3']:
                 return results[temp[int(choice) - 1]]
             elif choice == '0':
@@ -335,7 +334,7 @@ def displayAnswer(results, resultsCount, selectedQuestion):
             print('Score: ' + str(result['Score']))
             i = i + 1
         displayOptions(False)
-        choice = input().strip().lower()
+        choice = input("Enter Your choice here: ").strip().lower()
         if choice in ['1', '2', '3']:
             return results[temp[int(choice) - 1]]
         elif choice == 'x':
@@ -376,7 +375,7 @@ def displayQuestions(results, resultsCount):
             print('AnswerCount: ' + str(result['AnswerCount']))
             i = i + 1
         displayOptions(False)
-        choice = input().strip().lower()
+        choice = input("Enter Your choice here: ").strip().lower()
         if choice in ['1', '2', '3']:
             return results[temp[int(choice) - 1]]
         elif choice == 'x':
