@@ -102,7 +102,7 @@ def displayMainMenu(userID):
                             selectedQuestion['Id'])
                         if resultsCountA > 0:
                             selectedAnswer = displayAnswer(
-                                resultsA, resultsCountA)
+                                resultsA, resultsCountA, selectedQuestion)
                             if selectedAnswer != None:
                                 AnswerAction = displaySelectedAnswer(
                                     selectedAnswer)
@@ -268,7 +268,7 @@ def listAnswers(postID):
     return (resultsA, len(resultsA))
 
 
-def displayAnswer(results, resultsCount):
+def displayAnswer(results, resultsCount, selectedQuestion):
     """
         Display a list of answers and prompts the user to select an answer
         Input: results - a list of dictionaries representing the answers
@@ -278,6 +278,37 @@ def displayAnswer(results, resultsCount):
     displayCount = 3
     i = 0
     temp = [0] * displayCount
+    if 'AcceptedAnswerId' in selectedQuestion:
+        acceptedAnswer = None
+        for result in results:
+            if result['Id'] == selectedQuestion['AcceptedAnswerId']:
+                acceptedAnswer = result
+        while True:
+            print('*' * 20 + ' 0 ' + '*' * 20)
+            print('Answer: ' + str(acceptedAnswer['Body'])[:80])
+            print('CreationDate: ' + str(acceptedAnswer['CreationDate']))
+            print('Score: ' + str(acceptedAnswer['Score']))
+            for j in range(displayCount):
+                if i == resultsCount:
+                    i = 0
+                temp[j] = i
+                result = results[i]
+                print('-' * 20 + ' ' + str(j + 1) + ' ' + '-' * 20)
+                print('Answer: ' + str(result['Body'])[:80])
+                print('CreationDate: ' + str(result['CreationDate']))
+                print('Score: ' + str(result['Score']))
+                i = i + 1
+            print('\nEnter 1 (top), 2, or 3 (bottom) to select the post currently displayed.')
+            print('Enter 0 to select the accepted answer.')
+            print('Enter "x" to return to main menu.')
+            print('Enter anything else to see more results.')
+            choice = input().strip().lower()
+            if choice in ['1', '2', '3']:
+                return results[temp[int(choice) - 1]]
+            elif choice == '0':
+                return acceptedAnswer
+            elif choice == 'x':
+                return None
     while True:
         for j in range(displayCount):
             if i == resultsCount:
