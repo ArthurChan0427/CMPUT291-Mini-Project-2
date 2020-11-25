@@ -246,7 +246,7 @@ def searchQuestions():
     """
     reg = '|'.join(input(
         'Please enter keywords separated by spaces (word1 word2 ...): ').strip().split())
-
+    
     searchCondition = {
         '$and': [
             {'$or': [
@@ -258,6 +258,7 @@ def searchQuestions():
     }
     results = list(db['posts_collection'].find(searchCondition))
     return (results, len(results))
+
 
 
 def listAnswers(postID):
