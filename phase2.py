@@ -291,27 +291,28 @@ def displayAnswer(results, resultsCount, selectedQuestion):
                 results.remove(acceptedAnswer)
                 resultsCount -= 1
         while True:
-            print('*' * 20 + ' 0 ' + '*' * 20)
-            print('Answer: ' + str(acceptedAnswer['Body'])[:80])
-            print('CreationDate: ' + str(acceptedAnswer['CreationDate']))
-            print('Score: ' + str(acceptedAnswer['Score']))
-            for j in range(displayCount):
-                if i == resultsCount:
-                    i = 0
-                temp[j] = i
-                result = results[i]
-                print('-' * 20 + ' ' + str(j + 1) + ' ' + '-' * 20)
-                print('Answer: ' + str(result['Body'])[:80])
-                print('CreationDate: ' + str(result['CreationDate']))
-                print('Score: ' + str(result['Score']))
-                i = i + 1
-            print(
-                '\nEnter 1 (top), 2, or 3 (bottom) to select the post currently displayed.')
+            if resultsCount > 0:
+                print('*' * 20 + ' 0 ' + '*' * 20)
+                print('Answer: ' + str(acceptedAnswer['Body'])[:80])
+                print('CreationDate: ' + str(acceptedAnswer['CreationDate']))
+                print('Score: ' + str(acceptedAnswer['Score']))
+                for j in range(displayCount):
+                    if i == resultsCount:
+                        i = 0
+                    temp[j] = i
+                    result = results[i]
+                    print('-' * 20 + ' ' + str(j + 1) + ' ' + '-' * 20)
+                    print('Answer: ' + str(result['Body'])[:80])
+                    print('CreationDate: ' + str(result['CreationDate']))
+                    print('Score: ' + str(result['Score']))
+                    i = i + 1
+                print(
+                    '\nEnter 1 (top), 2, or 3 (bottom) to select the post currently displayed.')
             print('Enter 0 to select the accepted answer.')
             print('Enter "x" to return to main menu.')
             print('Enter anything else to see more results.')
             choice = input().strip().lower()
-            if choice in ['1', '2', '3']:
+            if resultsCount > 0 and choice in ['1', '2', '3']:
                 return results[temp[int(choice) - 1]]
             elif choice == '0':
                 return acceptedAnswer
