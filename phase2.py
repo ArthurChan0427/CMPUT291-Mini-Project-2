@@ -318,7 +318,7 @@ def displayAnswer(results, resultsCount, selectedQuestion):
                     '\nEnter 1 (top), 2, or 3 (bottom) to select the post currently displayed.')
             print('Enter 0 to select the accepted answer.')
             displayOptions()
-            choice = input().strip().lower()
+            choice = input("Enter Your choice here: ").strip().lower()
             if resultsCount > 0 and choice in ['1', '2', '3']:
                 return results[temp[int(choice) - 1]]
             elif choice == '0':
