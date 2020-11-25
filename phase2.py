@@ -23,8 +23,7 @@ def main():
             exit = displayMainMenu(userID)
         else:
             print("Invalid UserID!")
-            print(
-                "Only integers are accepted as user ID or You can leave it empty and press enter to continue.")
+            print("Only integers are accepted as user ID or You can leave it empty and press enter to continue.")
     print('shutting down...')
 
 
@@ -84,10 +83,8 @@ def displayMainMenu(userID):
         Output: None
     """
     while True:
-        print('\nEnter "x" to logout')
-        print('Enter 1 to post a question')
-        print('Enter 2 to search for questions')
-        command = input()
+        userInterface()
+        command = input("Enter Your choice here: ")
         if command == '1':
             postQuestion(userID)
         elif command == '2':
@@ -154,6 +151,14 @@ def postAnswer(userID, selectedQuestion):
     db['posts_collection'].update_one(
         {'Id': selectedQuestion['Id']}, {'$inc': {'AnswerCount': 1}})
 
+def userInterface():
+    print()
+    print('#'*20, 'Main Menu','#'*20)
+    print('Enter "x" to logout')
+    print('Enter 1 to post a question')
+    print('Enter 2 to search for questions')
+    print('#'*50)
+    print()
 
 def castVote(userID, postID):
     """
@@ -176,7 +181,8 @@ def castVote(userID, postID):
                 'PostId': postID,
             }
             db['votes_collection'].insert_one(document)
-            print("Your vote has been casted")
+            print()
+            print("Your vote has been casted!")
     else:
         db['posts_collection'].update_one(
             {'Id': postID}, {'$inc': {'Score': 1}})
@@ -187,7 +193,8 @@ def castVote(userID, postID):
             'PostId': postID,
         }
         db['votes_collection'].insert_one(document)
-        print("Your vote has been casted.")
+        print()
+        print("Your vote has been casted!")
 
 
 def postQuestion(userID):
@@ -239,9 +246,10 @@ def searchQuestions():
         Output: results - a list of dictionaries representing the retrieved questions
                 len(results) - number of questions retrieved
     """
-    reg = '|'.join(input(
-        'Please enter keywords separated by spaces (word1 word2 ...): ').strip().split())
-    
+    print()
+    reg = '|'.join(input('Please enter keywords separated by spaces (word1 word2 ...): ').strip().split())
+    print("Searching Questions...")
+    print()
     searchCondition = {
         '$and': [
             {'$or': [
@@ -306,11 +314,8 @@ def displayAnswer(results, resultsCount, selectedQuestion):
                 print('CreationDate: ' + str(result['CreationDate']))
                 print('Score: ' + str(result['Score']))
                 i = i + 1
-            print(
-                '\nEnter 1 (top), 2, or 3 (bottom) to select the post currently displayed.')
             print('Enter 0 to select the accepted answer.')
-            print('Enter "x" to return to main menu.')
-            print('Enter anything else to see more results.')
+            displayOptions()
             choice = input().strip().lower()
             if choice in ['1', '2', '3']:
                 return results[temp[int(choice) - 1]]
@@ -329,16 +334,21 @@ def displayAnswer(results, resultsCount, selectedQuestion):
             print('CreationDate: ' + str(result['CreationDate']))
             print('Score: ' + str(result['Score']))
             i = i + 1
-        print('\nEnter 1 (top), 2, or 3 (bottom) to select the post currently displayed.')
-        print('Enter "x" to return to main menu.')
-        print('Enter anything else to see more results.')
+        displayOptions()
         choice = input().strip().lower()
         if choice in ['1', '2', '3']:
             return results[temp[int(choice) - 1]]
         elif choice == 'x':
             return None
 
-
+def displayOptions():
+    print()
+    print('#'*20, 'Options','#'*20)
+    print('Enter 1, 2, or 3 to select the post currently displayed.')
+    print('Enter "x" to return to main menu.')
+    print('Enter anything else to see more results.')
+    print('#'*50)
+    print()
 def displayQuestions(results, resultsCount):
     """
         Displays a list of questions and prompts the user to select a question
@@ -361,9 +371,7 @@ def displayQuestions(results, resultsCount):
             print('Score: ' + str(result['Score']))
             print('AnswerCount: ' + str(result['AnswerCount']))
             i = i + 1
-        print('\nEnter 1 (top), 2, or 3 (bottom) to select the post currently displayed.')
-        print('Enter "x" to return to main menu.')
-        print('Enter anything else to see more results.')
+        displayOptions()
         choice = input().strip().lower()
         if choice in ['1', '2', '3']:
             return results[temp[int(choice) - 1]]
@@ -384,11 +392,15 @@ def displaySelectedQuestion(selectedQuestion):
     print('\n' + '-' * 20 + ' Your selection ' + '-' * 20)
     for field in selectedQuestion.keys():
         print(field + ": " + str(selectedQuestion[field]))
-    print('\nEnter 1 to post an answer to this question.')
+    print()
+    print('#'*20, 'Options','#'*20)
+    print('Enter 1 to post an answer to this question.')
     print('Enter 2 to list all existing answers to this question.')
     print('Enter 3 to vote for this question.')
     print('Enter anything else to return to main menu.')
-    optionEntered = input()
+    print('#'*50)
+    print()
+    optionEntered = input("Enter Your choice here: ")
     if optionEntered.isdigit():
         return int(optionEntered)
     return optionEntered
@@ -407,9 +419,13 @@ def displaySelectedAnswer(selectedAnswer):
     print('\n' + '-' * 20 + ' Your selection ' + '-' * 20)
     for field in selectedAnswer.keys():
         print(field + ": " + str(selectedAnswer[field]))
+    print()
+    print('#'*20, 'Options','#'*20)
     print('Enter 1 to vote for this answer.')
     print('Enter anything else to return to main menu.')
-    optionEntered = input()
+    print('#'*50)
+    print()
+    optionEntered = input("Enter Your choice here: ")
     if optionEntered.isdigit():
         return int(optionEntered)
     return optionEntered
