@@ -300,11 +300,11 @@ def displayAnswer(results, resultsCount, selectedQuestion):
                 results.remove(acceptedAnswer)
                 resultsCount -= 1
         while True:
+            print('*' * 20 + ' 0 ' + '*' * 20)
+            print('Answer: ' + str(acceptedAnswer['Body'])[:80])
+            print('CreationDate: ' + str(acceptedAnswer['CreationDate']))
+            print('Score: ' + str(acceptedAnswer['Score']))
             if resultsCount > 0:
-                print('*' * 20 + ' 0 ' + '*' * 20)
-                print('Answer: ' + str(acceptedAnswer['Body'])[:80])
-                print('CreationDate: ' + str(acceptedAnswer['CreationDate']))
-                print('Score: ' + str(acceptedAnswer['Score']))
                 for j in range(displayCount):
                     if i == resultsCount:
                         i = 0
