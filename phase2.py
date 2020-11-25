@@ -14,7 +14,7 @@ def main():
     """
     exit = False
     while not exit:
-        userID = input("\nEnter your user ID: ").strip()
+        userID = input("\nEnter your user ID (Enter a blank field to operate anonymously): ").strip()
         if userID != '':
             displayUserReport(userID)
         exit = displayMainMenu(userID)
@@ -158,7 +158,7 @@ def castVote(userID, postID):
         Output: None
     """
     if userID != '':
-        if db['votes_collection'].find({'$and': [{'UserId': userID}, {'PostID': postID}]}).limit(1).count() > 0:
+        if db['votes_collection'].find({'$and': [{'UserId': userID}, {'PostId': postID}]}).limit(1).count() > 0:
             print("You have already voted on this post!")
         else:
             db['posts_collection'].update_one(
@@ -168,7 +168,7 @@ def castVote(userID, postID):
                 'CreationDate': str(datetime.now()),
                 'VoteTypeId': '2',
                 'UserId': userID,
-                'PostID': postID,
+                'PostId': postID,
             }
             db['votes_collection'].insert_one(document)
             print("Your vote has been casted")
@@ -179,7 +179,7 @@ def castVote(userID, postID):
             'Id': generateUniqueID(3),
             'CreationDate': str(datetime.now()),
             'VoteTypeId': '2',
-            'PostID': postID,
+            'PostId': postID,
         }
         db['votes_collection'].insert_one(document)
         print("Your vote has been casted.")
