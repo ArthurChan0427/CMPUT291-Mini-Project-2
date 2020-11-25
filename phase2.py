@@ -163,7 +163,7 @@ def castVote(userID, postID):
         Output: None
     """
     if userID != '':
-        if db['votes_collection'].find({'$and': [{'UserId': userID}, {'PostId': postID}]}).limit(1).count() > 0:
+        if len(list(db['votes_collection'].find({'$and': [{'UserId': userID}, {'PostId': postID}]}))) > 0:
             print("You have already voted on this post!")
         else:
             db['posts_collection'].update_one(
