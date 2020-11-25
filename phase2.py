@@ -315,10 +315,7 @@ def displayAnswer(results, resultsCount, selectedQuestion):
                     print('CreationDate: ' + str(result['CreationDate']))
                     print('Score: ' + str(result['Score']))
                     i = i + 1
-                print(
-                    '\nEnter 1 (top), 2, or 3 (bottom) to select the post currently displayed.')
-            print('Enter 0 to select the accepted answer.')
-            displayOptions()
+            displayOptions(True)
             choice = input().strip().lower()
             if resultsCount > 0 and choice in ['1', '2', '3']:
                 return results[temp[int(choice) - 1]]
@@ -337,21 +334,25 @@ def displayAnswer(results, resultsCount, selectedQuestion):
             print('CreationDate: ' + str(result['CreationDate']))
             print('Score: ' + str(result['Score']))
             i = i + 1
-        displayOptions()
+        displayOptions(False)
         choice = input().strip().lower()
         if choice in ['1', '2', '3']:
             return results[temp[int(choice) - 1]]
         elif choice == 'x':
             return None
 
-def displayOptions():
+def displayOptions(acceptedAnswerExist):
     print()
     print('#'*20, 'Options','#'*20)
+    if acceptedAnswerExist:
+        print('Enter 0 to select the accepted answer.')
     print('Enter 1, 2, or 3 to select the post currently displayed.')
     print('Enter "x" to return to main menu.')
     print('Enter anything else to see more results.')
     print('#'*50)
     print()
+
+
 def displayQuestions(results, resultsCount):
     """
         Displays a list of questions and prompts the user to select a question
@@ -374,7 +375,7 @@ def displayQuestions(results, resultsCount):
             print('Score: ' + str(result['Score']))
             print('AnswerCount: ' + str(result['AnswerCount']))
             i = i + 1
-        displayOptions()
+        displayOptions(False)
         choice = input().strip().lower()
         if choice in ['1', '2', '3']:
             return results[temp[int(choice) - 1]]
