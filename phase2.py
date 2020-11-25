@@ -14,7 +14,8 @@ def main():
     """
     exit = False
     while not exit:
-        userID = input("\nEnter your user ID (Enter a blank field to operate anonymously): ").strip()
+        userID = input(
+            "\nEnter your user ID (Enter a blank field to operate anonymously): ").strip()
         if userID != '' and userID.isnumeric():
             displayUserReport(userID)
             exit = displayMainMenu(userID)
@@ -22,8 +23,8 @@ def main():
             exit = displayMainMenu(userID)
         else:
             print("Invalid UserID!")
-            print("Only integers are accepted as user ID or You can leave it empty and press enter to continue.")
-        #exit = displayMainMenu(userID)
+            print(
+                "Only integers are accepted as user ID or You can leave it empty and press enter to continue.")
     print('shutting down...')
 
 
@@ -72,14 +73,8 @@ def displayUserReport(userID):
         print('average score of answers: ' +
               str(round(list(averageAnswerScore)[0]['score'], 2)))
 
-    
-    voteCount = db['votes_collection'].aggregate([
-        {'$match': {'UserId': userID}},
-        {'$group': {'_id': None, 'count': {'$sum': 1}}
-            }
-    ])
-    print('total votes casted: ' +
-            str(list(voteCount)[0]['count']))
+    voteCount = db['votes_collection'].count_documents({'UserId': userID})
+    print('total votes casted: ' + str(voteCount))
 
 
 def displayMainMenu(userID):
@@ -123,9 +118,9 @@ def displayMainMenu(userID):
         elif command == 'x' or command == 'X':
             while True:
                 exit = input('exit the program (y / n): ')
-                if exit.lower() == 'y' or exit.lower() == 'yes' :
+                if exit.lower() == 'y' or exit.lower() == 'yes':
                     return True
-                elif exit.lower() == 'n' or exit.lower() == 'no' :
+                elif exit.lower() == 'n' or exit.lower() == 'no':
                     return False
                 else:
                     print('Invalid command: ' + exit)
@@ -310,7 +305,8 @@ def displayAnswer(results, resultsCount, selectedQuestion):
                 print('CreationDate: ' + str(result['CreationDate']))
                 print('Score: ' + str(result['Score']))
                 i = i + 1
-            print('\nEnter 1 (top), 2, or 3 (bottom) to select the post currently displayed.')
+            print(
+                '\nEnter 1 (top), 2, or 3 (bottom) to select the post currently displayed.')
             print('Enter 0 to select the accepted answer.')
             print('Enter "x" to return to main menu.')
             print('Enter anything else to see more results.')
