@@ -285,7 +285,7 @@ def displayAnswer(results, resultsCount):
             temp[j] = i
             result = results[i]
             print('-' * 20 + ' ' + str(j + 1) + ' ' + '-' * 20)
-            print('Answer: ' + str(result['Body']))
+            print('Answer: ' + str(result['Body'])[:80])
             print('CreationDate: ' + str(result['CreationDate']))
             print('Score: ' + str(result['Score']))
             i = i + 1
