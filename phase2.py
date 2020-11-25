@@ -283,6 +283,8 @@ def displayAnswer(results, resultsCount, selectedQuestion):
         for result in results:
             if result['Id'] == selectedQuestion['AcceptedAnswerId']:
                 acceptedAnswer = result
+                results.remove(acceptedAnswer)
+                resultsCount -= 1
         while True:
             print('*' * 20 + ' 0 ' + '*' * 20)
             print('Answer: ' + str(acceptedAnswer['Body'])[:80])
