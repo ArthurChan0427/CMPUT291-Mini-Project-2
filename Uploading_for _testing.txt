@@ -1,0 +1,77 @@
+CMPUT 291 - Fall 2020
+A marking rubric for Mini-project 2 
+
+[80 marks total] Demo session broken down to
+[10 marks] a) Phase 1
+  The mark break-down is 80% for the correctness of the database and 20% for efficiency of your code (in terms of running time). The mark for this phase is zero if it is not done under 5min.
+
+[70 marks] b) Phase 2
+  User initial screen
+    A user id can be provided (but is not mandatory)
+    If a user id from the database is entered, a report is given (as per spec)
+  Post a question
+    The information is obtained and recorded in the database
+    A unique id is assigned, and the post date is set to the current date 
+    The owner user is set to the current user (if a userid is provided)
+    The post type and the content license are set (as per spec)
+    The provided tags are either inserted to (if they don't exist) or updated (if they do exists) in Tags collection.
+  Search for questions
+    The user enters one or more keywords and the system retrieves all matching posts (as per spec)
+    For each matching post, the information listed in the spec are displayed
+    A question can be selected to see all information and for further question actions
+  Question action-Answer
+    An answer is obtained and is recorded in the database
+    A unique id is assigned, and the post date is set to the current date 
+    The owner user is set to the current user (if a userid is provided)
+    The answer is linked to the question
+    The post type and the content license are set (as per spec)
+  Question action-List answers
+    All answers are shown
+    The accepted answer (if any) is marked and is the 1st answer
+    The fields are displayed (as per spec)
+    An answer can be selected to see all information and for further answer actions
+  Question/Answer action-Vote
+    A vote for the post is recorded in votes collection (if the user has not voted on the same post)
+    A unique vote id is assigned, the vote date is set to the current date 
+    The user id is set to the current user (if a userid is provided)
+    The post id and the vote type are set as per spec
+    For the post being voted, the score field in Posts is increased by one
+
+[? marks] d) Main menu
+  After each action, the control is returned to the main menu for further operations
+  The user can exit the program if s/he wishes
+
+[? marks] Operations in Phase 2 are expected to be instant. A search or action that is correct but not instant can lose up to 50% of the mark. A search/action that takes more than 10sec will be considered as fail.
+
+[? marks] e) for groups of 3
+  Terms of length 3 or more are extracted in Phase 1 and are indexed
+  The indexed terms are used when searching for questions using keywords in Phase 2
+
+
+[15 marks total] Report includes
+  (a) A general overview of the system with a small user guide
+  (b) A detailed design of the software 
+  (c) Testing strategy 
+  (d) Source code quality
+
+[5 marks total] Project break-down and group coordination
+  The project break-down between partners is well-explained
+  The person responsible for each task is stated
+  The time spent and the progress made for each partner is stated
+  The method of coordination is discussed
+
+Testing process
+  1. The demo will be run using the source code submitted and nothing else. It is essential to include every file that is needed to compile and run your code.
+  
+  2. You will be joining our TAs in your demo session.
+
+  3. We must be able to compile and run your code under our account on lab machines and using our own database. You are not allowed to make any changes to the code without a hefty penalty. The penalty is 10% deduction for editing 1-10 characters and 20% deduction for editing 11-20 characters. An edit can be adding a character, removing a character or replacing a character in your application code. The changes are accumulative, meaning if you add 10 characters to one file and remove 6 characters from another file, your changes will be counted as 16, and you will lose 20 marks assuming the project is marked out of 100.
+
+  4. Changing more than 20 characters is not allowed, and if that is the only way to run your application, you will get zero on the demo part.
+ 
+  5. Our test data and our test cases will be published after the project due date but before our demo times. You will have a chance to self-asses your application and learn about possible issues (if any) before your demo time.
+
+  6. Before we start your demo, you have the options to (a) run your code as is following our marking scheme, (b) change your code under the penalty scheme discussed above, or (c) withdraw from demo.
+    (a) Your preferred choice should be running your uploaded code as is. Under this option, your demo mark will be all based on how your program performs on our test cases.
+    (b) If you decide to change your code, you will be given up to 5min to change anything you wish in your application according to the penalty scheme discussed above. Since your code is under a TA account, you will instruct the TA to make those changes. After we start running your application, no change can be made, and your project will be assessed strictly following our marking scheme. For the same reason, it is important to run your application with our test cases in advance and know if your application fails and where it fails.
+    (c) You may withdraw from demoing your work for any reason (e.g., you need to make more than 20 character changes to make it work). In such cases, we will assess your project visually and will assign a mark ranging between 0 to 15% for the effort. If you decide to take this option, you have to let us know explicitly either before demo time or at the demo time before attempting to run your application. Otherwise, we will not be evaluating any submission that is not demoed. Also this option is not applicable after we start demoing your application.
