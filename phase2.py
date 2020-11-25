@@ -15,9 +15,15 @@ def main():
     exit = False
     while not exit:
         userID = input("\nEnter your user ID (Enter a blank field to operate anonymously): ").strip()
-        if userID != '':
+        if userID != '' and userID.isnumeric():
             displayUserReport(userID)
-        exit = displayMainMenu(userID)
+            exit = displayMainMenu(userID)
+        elif userID == '':
+            exit = displayMainMenu(userID)
+        else:
+            print("Invalid UserID!")
+            print("Only integers are accepted as user ID or You can leave it empty and press enter to continue.")
+        #exit = displayMainMenu(userID)
     print('shutting down...')
 
 
