@@ -115,10 +115,14 @@ def displayMainMenu(userID):
             else:
                 print('No matching results...')
         elif command == 'x' or command == 'X':
-            exit = input('exit the program (y / n): ')
-            if exit == 'y' or exit == 'Y':
-                return True
-            return False
+            while True:
+                exit = input('exit the program (y / n): ')
+                if exit.lower() == 'y' or exit.lower() == 'yes' :
+                    return True
+                elif exit.lower() == 'n' or exit.lower() == 'no' :
+                    return False
+                else:
+                    print('Invalid command: ' + exit)
         else:
             print('Invalid command: ' + command)
 
